@@ -1,12 +1,14 @@
 package com.example.testfornyblesoft.fragment;
 
 import android.content.Context;
-import android.net.Uri;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.testfornyblesoft.R;
 
@@ -19,6 +21,9 @@ public class NavigationFragment extends Fragment {
        private String mParam2;
    */
     private OnNavigationFragmentInteractionListener mListener;
+    private TextView tvLocation;
+    private Button bGetLocation;
+    private Location location;
 
     public NavigationFragment() {
     }
@@ -44,16 +49,21 @@ public class NavigationFragment extends Fragment {
         */
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_navigation, container, false);
-    }
-
-    public void onButtonPressed() {
-        if (mListener != null) {
-            mListener.onFragmentInteraction();
-        }
+        View view = inflater.inflate(R.layout.fragment_navigation, container, false);
+        tvLocation = view.findViewById(R.id.tvLocation);
+        bGetLocation = view.findViewById(R.id.bGetLocation);
+        bGetLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                location = mListener.getLocation();
+                tvLocation.setText(location.getLatitude() + " , " + location.getLongitude());
+            }
+        });
+        return view;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.example.testfornyblesoft.fragment;
 
-import android.net.Uri;
+import android.location.Location;
 
 public interface OnNavigationFragmentInteractionListener {
-    void onFragmentInteraction();
+    Location getLocation();
 
 }
