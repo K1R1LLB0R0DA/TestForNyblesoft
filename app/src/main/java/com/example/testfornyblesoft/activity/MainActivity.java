@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,30 +26,28 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
-public class MainActivity extends FragmentActivity implements OnNavigationFragmentInteractionListener, OnListFragmentInteractionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends FragmentActivity implements OnNavigationFragmentInteractionListener, OnListFragmentInteractionListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final long UPDATE_INTERVAL = 5000, FASTEST_INTERVAL = 5000;
     //int for permissions request result
     private static final int ALL_PERMISSIONS_RESULT = 1011;
-    private ViewPager vpMain;
-    private FragmentAdapter fragmentAdapter;
     private Location location;
     private GoogleApiClient googleApiClient;
-    private LocationRequest locationRequest;
     //lists for permissions
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissions = new ArrayList<>();
     private ArrayList<String> permissionsRejected = new ArrayList<>();
 
-
+    private FragmentAdapter fragmentAdapter;
+    private ViewPager vpMain;
     private TextView textView;
 
 
@@ -60,10 +60,8 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
         textView = findViewById(R.id.tvMain);
         textView.setText("Current Location");
 
-
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-
         permissionsToRequest = permissionsToRequest(permissions);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -71,18 +69,15 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
                 requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
             }
         }
-
         //build google api client
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this).build();
+                .addConnectionCallbacks(this).build();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         if (googleApiClient != null) {
             googleApiClient.connect();
         }
@@ -91,7 +86,6 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
     @Override
     protected void onResume() {
         super.onResume();
-
         if (!checkPlaServices()) {
             Toast.makeText(this, "You need to install GPS", Toast.LENGTH_LONG).show();
         }
@@ -100,8 +94,6 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
     @Override
     protected void onPause() {
         super.onPause();
-
-        //stop location updates
         if (googleApiClient != null && googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
             googleApiClient.disconnect();
@@ -156,9 +148,26 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
 
     @Override
     public Location getLocation() {
-        /*  LocationListener locationListener = new LocationListener(this);
-        return locationListener.getLastLocation();*/
         return location;
+    }
+
+    private List<Address> getAdress() throws IOException {
+        Geocoder geocoder = new Geocoder(this, getResources().getConfiguration().locale);
+        return geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+    }
+
+    private void showAddress() {
+        try {
+            Address addresses = getAdress().get(0);
+            StringBuilder address = new StringBuilder();
+
+            address.append(addresses.getFeatureName());
+            address.append(", ");
+            address.append(addresses.getCountryName());
+            textView.append(address);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -174,22 +183,6 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
             //show location
             showLocation(location);
         }
-
-        startLocationUpdates();
-    }
-
-    private void startLocationUpdates() {
-        locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(FASTEST_INTERVAL);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "You need to enable permissions to daisplay location", Toast.LENGTH_LONG).show();
-        }
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
     @Override
@@ -198,16 +191,7 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
     public void onLocationChanged(Location location) {
-        if (location != null) {
-            //show location
-            showLocation(location);
-        }
     }
 
     @Override
@@ -249,6 +233,7 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
 
     private void showLocation(Location location) {
         textView.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
-
+        textView.append("\n");
+        showAddress();
     }
 }
