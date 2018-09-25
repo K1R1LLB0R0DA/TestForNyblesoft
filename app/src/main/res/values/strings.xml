@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">TestForNyblesoft</string>
 
+    <string name="geocodingKey">d24831ec5e6c3f</string>
+
     <string name="navigationFragmentName">Location</string>
     <string name="listFragmentName">History</string>
 </resources>

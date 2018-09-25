@@ -2,15 +2,22 @@ package com.example.testfornyblesoft.fragment;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.testfornyblesoft.R;
+import com.example.testfornyblesoft.api.LatLon;
+import com.example.testfornyblesoft.pojo.Geocoding;
+import com.example.testfornyblesoft.server.GeocodingServer;
+
+import java.io.IOException;
+
+import retrofit2.Response;
 
 
 public class NavigationFragment extends Fragment {
@@ -22,8 +29,9 @@ public class NavigationFragment extends Fragment {
    */
     private OnNavigationFragmentInteractionListener mListener;
     private TextView tvLocation;
-    private Button bGetLocation;
     private Location location;
+
+    private Geocoding geocoding;
 
     public NavigationFragment() {
     }
@@ -55,15 +63,63 @@ public class NavigationFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
         tvLocation = view.findViewById(R.id.tvLocation);
-        bGetLocation = view.findViewById(R.id.bGetLocation);
-        bGetLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                location = mListener.getLocation();
-                tvLocation.setText(location.getLatitude() + " , " + location.getLongitude());
-            }
-        });
         return view;
+    }
+
+    private void getLocation() {
+        location = mListener.getLocation();
+        showLocation(location);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getLocation();
+    }
+
+    private void showLocation(Location location) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Latitude : ");
+        stringBuilder.append(location.getLatitude());
+        stringBuilder.append("\nLongitude : ");
+        stringBuilder.append(location.getLongitude());
+        stringBuilder.append("\n");
+        tvLocation.setText(stringBuilder);
+        waitGeocoding();
+    }
+
+    private void getGeocodingFromServer() {
+        try {
+            String locationSB = location.getLatitude() + "," + location.getLongitude();
+            LatLon latLon = new LatLon(location.getLatitude(), location.getLongitude());
+            Response<Geocoding> geoResponse = GeocodingServer.getInstance().getApiCategory().getLocation(getResources().getString(R.string.geocodingKey), location.getLatitude(), location.getLongitude(), "json").execute();
+            if (geoResponse.isSuccessful()) {
+                geocoding = new Geocoding();
+                geocoding.setDisplayName(geoResponse.body().getDisplayName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void waitGeocoding() {
+        new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                getGeocodingFromServer();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                showAddress();
+            }
+        }.execute();
+    }
+
+    public void showAddress() {
+        tvLocation.append(geocoding.getDisplayName() + "\n");
     }
 
     @Override
