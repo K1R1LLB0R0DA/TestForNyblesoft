@@ -223,13 +223,4 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
                 break;
         }
     }
-
-    private void showLocation(Location location) {
-       /* textView.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
-        textView.append("\n");
-        showAddress();*/
-      /*  FragmentManager fragmentManager = getSupportFragmentManager();
-        NavigationFragment navigationFragment = (NavigationFragment) fragmentManager.findFragmentById(R.id.navigationFragment);
-        navigationFragment.showLocation(location);*/
-    }
 }
