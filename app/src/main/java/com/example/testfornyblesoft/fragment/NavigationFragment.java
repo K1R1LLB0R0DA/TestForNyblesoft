@@ -11,9 +11,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.testfornyblesoft.R;
-import com.example.testfornyblesoft.api.LatLon;
 import com.example.testfornyblesoft.pojo.Geocoding;
+import com.example.testfornyblesoft.pojo.Weather;
 import com.example.testfornyblesoft.server.GeocodingServer;
+import com.example.testfornyblesoft.server.WeatherServer;
 
 import java.io.IOException;
 
@@ -21,29 +22,25 @@ import retrofit2.Response;
 
 
 public class NavigationFragment extends Fragment {
-    /*   private static final String ARG_PARAM1 = "param1";
-       private static final String ARG_PARAM2 = "param2";
 
-       private String mParam1;
-       private String mParam2;
-   */
     private OnNavigationFragmentInteractionListener mListener;
     private TextView tvLocation;
     private Location location;
 
     private Geocoding geocoding;
+    private Weather weather;
 
     public NavigationFragment() {
     }
-
-
-    public static NavigationFragment newInstance() {
-        NavigationFragment fragment = new NavigationFragment();
      /*   Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
      */
+
+    public static NavigationFragment newInstance() {
+        NavigationFragment fragment = new NavigationFragment();
+
         return fragment;
     }
 
@@ -86,16 +83,45 @@ public class NavigationFragment extends Fragment {
         stringBuilder.append("\n");
         tvLocation.setText(stringBuilder);
         waitGeocoding();
+        waitWeather();
     }
 
     private void getGeocodingFromServer() {
         try {
-            String locationSB = location.getLatitude() + "," + location.getLongitude();
-            LatLon latLon = new LatLon(location.getLatitude(), location.getLongitude());
-            Response<Geocoding> geoResponse = GeocodingServer.getInstance().getApiCategory().getLocation(getResources().getString(R.string.geocodingKey), location.getLatitude(), location.getLongitude(), "json").execute();
+            Response<Geocoding> geoResponse = GeocodingServer.getInstance().getApiCategory()
+                    .getLocation(getResources().getString(R.string.geocodingKey), location.getLatitude(), location.getLongitude(), "json").execute();
             if (geoResponse.isSuccessful()) {
                 geocoding = new Geocoding();
                 geocoding.setDisplayName(geoResponse.body().getDisplayName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void waitWeather() {
+        new AsyncTask() {
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                showWeather();
+            }
+
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                getWeatherFromServer();
+                return null;
+            }
+        }.execute();
+    }
+
+    private void getWeatherFromServer() {
+        try {
+            Response<Weather> weatherResponse = WeatherServer.getInstance().getWeatherApi()
+                    .getWeather(location.getLatitude(), location.getLongitude(), getResources().getString(R.string.weatherKey), getResources().getString(R.string.units)).execute();
+            if (weatherResponse.isSuccessful()) {
+                weather = new Weather();
+                weather.setMain(weatherResponse.body().getMain());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -120,6 +146,17 @@ public class NavigationFragment extends Fragment {
 
     public void showAddress() {
         tvLocation.append(geocoding.getDisplayName() + "\n");
+    }
+
+    public void showWeather() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(weather.getMain().getTemp());
+        stringBuilder.append(", ");
+        stringBuilder.append(weather.getMain().getHumidity());
+        stringBuilder.append(", ");
+        stringBuilder.append(weather.getMain().getPressure());
+        stringBuilder.append(".\n");
+        tvLocation.append(stringBuilder);
     }
 
     @Override

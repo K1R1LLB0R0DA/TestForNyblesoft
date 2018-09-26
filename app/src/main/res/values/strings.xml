@@ -2,7 +2,11 @@
     <string name="app_name">TestForNyblesoft</string>
 
     <string name="geocodingKey">d24831ec5e6c3f</string>
+    <string name="weatherKey">7ce102f6de3c534b8bbcbd492f66caa5</string>
+    <string name="units">metric</string>
 
     <string name="navigationFragmentName">Location</string>
     <string name="listFragmentName">History</string>
+
+
 </resources>

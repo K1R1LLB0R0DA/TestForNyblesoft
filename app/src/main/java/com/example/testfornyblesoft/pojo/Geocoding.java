@@ -1,8 +1,9 @@
 package com.example.testfornyblesoft.pojo;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class Geocoding {
 
@@ -27,9 +28,6 @@ public class Geocoding {
     @SerializedName("display_name")
     @Expose
     private String displayName;
-    @SerializedName("address")
-    @Expose
-    private Address address;
     @SerializedName("boundingbox")
     @Expose
     private List<String> boundingbox = null;
@@ -88,14 +86,6 @@ public class Geocoding {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
     }
 
     public List<String> getBoundingbox() {
