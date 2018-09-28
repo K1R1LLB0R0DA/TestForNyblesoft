@@ -8,5 +8,15 @@
     <string name="navigationFragmentName">Location</string>
     <string name="listFragmentName">History</string>
 
+    <string name="latitude">Latitude: </string>
+    <string name="longitude">Longitude: </string>
+    <string name="temperature">Temperature: </string>
+    <string name="pressure">Pressure: </string>
+    <string name="humidity">Humidity: </string>
 
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
+    <string name="permissions">These permissions are mandatory to get your location. You need to allow them.</string>
+    <string name="service">You need to install Google Play Service.</string>
 </resources>

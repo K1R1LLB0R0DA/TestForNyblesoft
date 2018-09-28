@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
     protected void onResume() {
         super.onResume();
         if (!checkPlaServices()) {
-            Toast.makeText(this, "You need to install GPS", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getResources().getString(R.string.service), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -178,8 +178,8 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))) {
                             new AlertDialog.Builder(MainActivity.this)
-                                    .setMessage("These permissions are mandatory to get your location. You need to allow them.")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    .setMessage(getResources().getString(R.string.permissions))
+                                    .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -187,7 +187,7 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
                                             }
                                         }
                                     })
-                                    .setNegativeButton("Cancel", null).create().show();
+                                    .setNegativeButton(getResources().getString(R.string.cancel), null).create().show();
 
                             return;
                         }

@@ -1,22 +1,28 @@
 package com.example.testfornyblesoft.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.testfornyblesoft.R;
+import com.example.testfornyblesoft.activity.DescriptionActivity;
+import com.example.testfornyblesoft.adapter.OnItemClickListener;
+import com.example.testfornyblesoft.adapter.RecyclerAdapter;
+import com.example.testfornyblesoft.adapter.SavedData;
+import com.example.testfornyblesoft.preference.Preferences;
+
+import java.util.List;
 
 public class ListFragment extends Fragment {
-    /*  private static final String ARG_LISTENER = "param1";
-      private static final String ARG_PARAM2 = "param2";
-
-      private String mParam1;
-      private String mParam2;
-  */
     private OnListFragmentInteractionListener mListener;
+    private List<SavedData> data;
+    private RecyclerView rvHistory;
 
     public ListFragment() {
     }
@@ -24,34 +30,23 @@ public class ListFragment extends Fragment {
 
     public static ListFragment newInstance() {
         ListFragment fragment = new ListFragment();
-        /*  Bundle args = new Bundle();
-        args.putBinder(ARG_LISTENER, mListener);
-        fragment.setArguments(args);
-        */
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        */
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
+        rvHistory = view.findViewById(R.id.rvHistory);
+        initRecyclerView();
+        return view;
     }
 
-    public void onButtonPressed() {
-        if (mListener != null) {
-            mListener.onFragmentInteraction();
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -70,5 +65,27 @@ public class ListFragment extends Fragment {
         mListener = null;
     }
 
+    private void initRecyclerView() {
+        loadData();
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        rvHistory.setLayoutManager(linearLayoutManager);
+        OnItemClickListener onItemClickListener = new OnItemClickListener() {
+            @Override
+            public void onItemClick(int pos) {
+                Intent intent = new Intent(getContext(), DescriptionActivity.class);
+                intent.putExtra("position", pos);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        };
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(data, onItemClickListener);
+        rvHistory.setAdapter(recyclerAdapter);
+
+    }
+
+    private void loadData() {
+        Preferences preferences = Preferences.getPreferences(getContext());
+        data = preferences.loadFile();
+    }
 
 }
