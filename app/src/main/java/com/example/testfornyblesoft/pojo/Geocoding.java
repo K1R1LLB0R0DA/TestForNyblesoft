@@ -28,9 +28,20 @@ public class Geocoding {
     @SerializedName("display_name")
     @Expose
     private String displayName;
+    @SerializedName("address")
+    @Expose
+    private Address address;
     @SerializedName("boundingbox")
     @Expose
     private List<String> boundingbox = null;
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
     public String getPlaceId() {
         return placeId;

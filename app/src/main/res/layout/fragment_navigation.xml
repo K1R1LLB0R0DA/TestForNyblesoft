@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/tvLocation"
         android:layout_width="300dp"
-        android:layout_height="200dp"
+        android:layout_height="400dp"
         android:textSize="20sp" />
 
 </LinearLayout>

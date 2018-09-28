@@ -141,27 +141,6 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
         return location;
     }
 
-    /*  private List<Address> getAddresses() throws IOException {
-          Geocoder geocoder = new Geocoder(this, getResources().getConfiguration().locale);
-          return geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-      }*/
-
-
-
-
-  /*  private void showAddress() {
-        try {
-            Address addresses = getAddresses().get(0);
-            StringBuilder address = new StringBuilder();
-
-            address.append(addresses.getFeatureName());
-            address.append(", ");
-            address.append(addresses.getCountryName());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -172,9 +151,7 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
         location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
         if (location != null) {
-            //show location
             initViewPager();
-            //showLocation(location);
         }
     }
 

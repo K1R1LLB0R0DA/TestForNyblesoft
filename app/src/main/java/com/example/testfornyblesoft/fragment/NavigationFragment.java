@@ -11,12 +11,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.testfornyblesoft.R;
+import com.example.testfornyblesoft.adapter.SavedData;
 import com.example.testfornyblesoft.pojo.Geocoding;
 import com.example.testfornyblesoft.pojo.Weather;
+import com.example.testfornyblesoft.preference.Preferences;
 import com.example.testfornyblesoft.server.GeocodingServer;
 import com.example.testfornyblesoft.server.WeatherServer;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.List;
 
 import retrofit2.Response;
 
@@ -91,8 +95,7 @@ public class NavigationFragment extends Fragment {
             Response<Geocoding> geoResponse = GeocodingServer.getInstance().getApiCategory()
                     .getLocation(getResources().getString(R.string.geocodingKey), location.getLatitude(), location.getLongitude(), "json").execute();
             if (geoResponse.isSuccessful()) {
-                geocoding = new Geocoding();
-                geocoding.setDisplayName(geoResponse.body().getDisplayName());
+                geocoding = geoResponse.body();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,6 +108,8 @@ public class NavigationFragment extends Fragment {
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
                 showWeather();
+                saveData(new SavedData(location.getLatitude(), location.getLongitude(), geocoding.getDisplayName(), geocoding.getAddress().getCity(), Calendar.getInstance().getTime(), weather));
+                loadData();
             }
 
             @Override
@@ -113,6 +118,17 @@ public class NavigationFragment extends Fragment {
                 return null;
             }
         }.execute();
+    }
+
+    private void saveData(SavedData savedData) {
+        Preferences preferences = Preferences.getPreferences(getContext());
+        preferences.saveFile(savedData);
+    }
+
+    private void loadData() {
+        Preferences preferences = Preferences.getPreferences(getContext());
+        List<SavedData> data = preferences.loadFile();
+        tvLocation.append(data.size() + "");
     }
 
     private void getWeatherFromServer() {
