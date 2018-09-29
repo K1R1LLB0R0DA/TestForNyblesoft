@@ -19,4 +19,5 @@
     <string name="back">Back</string>
     <string name="permissions">These permissions are mandatory to get your location. You need to allow them.</string>
     <string name="service">You need to install Google Play Service.</string>
+    <string name="connection">You need to connect to the internet.</string>
 </resources>

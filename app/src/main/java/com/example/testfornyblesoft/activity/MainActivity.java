@@ -60,18 +60,17 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
                 requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
             }
         }
-        //build google api client
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this).build();
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (googleApiClient != null) {
-            googleApiClient.connect();
-        }
+        //build google api client
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this).build();
+        googleApiClient.connect();
     }
 
     @Override
@@ -80,6 +79,7 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
         if (!checkPlaServices()) {
             Toast.makeText(this, getResources().getString(R.string.service), Toast.LENGTH_LONG).show();
         }
+
     }
 
     @Override
@@ -162,6 +162,7 @@ public class MainActivity extends FragmentActivity implements OnNavigationFragme
 
     @Override
     public void onLocationChanged(Location location) {
+        this.location = location;
     }
 
     @Override

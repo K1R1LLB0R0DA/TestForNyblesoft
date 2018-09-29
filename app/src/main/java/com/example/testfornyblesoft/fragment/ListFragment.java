@@ -17,20 +17,29 @@ import com.example.testfornyblesoft.adapter.RecyclerAdapter;
 import com.example.testfornyblesoft.adapter.SavedData;
 import com.example.testfornyblesoft.preference.Preferences;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListFragment extends Fragment {
+    private static ListFragment fragment;
+    private RecyclerAdapter recyclerAdapter;
+    private List<SavedData> data = new ArrayList<>();
     private OnListFragmentInteractionListener mListener;
-    private List<SavedData> data;
     private RecyclerView rvHistory;
 
     public ListFragment() {
     }
 
 
-    public static ListFragment newInstance() {
-        ListFragment fragment = new ListFragment();
+    public static ListFragment getInstance() {
+        if (fragment == null)
+            fragment = new ListFragment();
         return fragment;
+    }
+
+    public void updateData() {
+        loadData();
+        initRecyclerView();
     }
 
     @Override
@@ -43,10 +52,14 @@ public class ListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         rvHistory = view.findViewById(R.id.rvHistory);
-        initRecyclerView();
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadData();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -66,7 +79,6 @@ public class ListFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        loadData();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvHistory.setLayoutManager(linearLayoutManager);
         OnItemClickListener onItemClickListener = new OnItemClickListener() {
@@ -78,9 +90,8 @@ public class ListFragment extends Fragment {
                 getActivity().finish();
             }
         };
-        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(data, onItemClickListener);
+        recyclerAdapter = new RecyclerAdapter(data, onItemClickListener);
         rvHistory.setAdapter(recyclerAdapter);
-
     }
 
     private void loadData() {

@@ -12,8 +12,8 @@
         android:id="@+id/tvDate"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:color="@color/orange"
         android:gravity="center"
+        android:textColor="@android:color/white"
         android:textSize="24sp" />
 
     <TextView
@@ -21,9 +21,9 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:color="@color/orange"
         android:gravity="center"
         android:text="@string/latitude"
+        android:textColor="@color/orange"
         android:textSize="20sp" />
 
     <TextView
@@ -31,9 +31,9 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:color="@color/orange"
         android:gravity="center"
         android:text="@string/longitude"
+        android:textColor="@color/orange"
         android:textSize="20sp" />
 
     <TextView
@@ -41,8 +41,8 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:color="@color/orange"
         android:gravity="center"
+        android:textColor="@color/orange"
         android:textSize="20sp" />
 
     <TextView
@@ -50,9 +50,9 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:color="@color/orange"
         android:gravity="center"
         android:text="@string/temperature"
+        android:textColor="@color/orange"
         android:textSize="20sp" />
 
     <TextView
@@ -60,9 +60,9 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:color="@color/orange"
         android:gravity="center"
         android:text="@string/humidity"
+        android:textColor="@color/orange"
         android:textSize="20sp" />
 
     <TextView
@@ -70,9 +70,9 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:color="@color/orange"
         android:gravity="center"
         android:text="@string/pressure"
+        android:textColor="@color/orange"
         android:textSize="20sp" />
 
     <Button

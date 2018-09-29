@@ -24,7 +24,7 @@ public class FragmentAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return NavigationFragment.newInstance();
             case 1:
-                return ListFragment.newInstance();
+                return ListFragment.getInstance();
             default:
                 return null;
         }

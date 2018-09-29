@@ -2,6 +2,8 @@ package com.example.testfornyblesoft.fragment;
 
 import android.content.Context;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.testfornyblesoft.R;
 import com.example.testfornyblesoft.adapter.SavedData;
@@ -63,20 +66,41 @@ public class NavigationFragment extends Fragment {
 
     private void getLocation() {
         location = mListener.getLocation();
-        showLocation(location);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         getLocation();
+        showLocation(location);
+        if (!checkConnection()) {
+            Toast.makeText(getContext(), getResources().getString(R.string.connection), Toast.LENGTH_LONG).show();
+        } else {
+            waitGeocoding();
+            waitWeather();
+        }
+    }
+
+    public boolean checkConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 
     private void showLocation(Location location) {
         tvLatitude.append(String.valueOf(location.getLatitude()));
         tvLongitude.append(String.valueOf(location.getLongitude()));
-        waitGeocoding();
-        waitWeather();
     }
 
     private void getGeocodingFromServer() {
@@ -98,6 +122,8 @@ public class NavigationFragment extends Fragment {
                 super.onPostExecute(o);
                 showWeather();
                 saveData(new SavedData(location.getLatitude(), location.getLongitude(), geocoding.getDisplayName(), geocoding.getAddress().getCity(), Calendar.getInstance().getTime(), weather));
+                ListFragment listFragment = ListFragment.getInstance();
+                listFragment.updateData();
             }
 
             @Override
@@ -144,7 +170,7 @@ public class NavigationFragment extends Fragment {
     }
 
     public void showAddress() {
-       tvAddress.setText(geocoding.getDisplayName());
+        tvAddress.setText(geocoding.getDisplayName());
     }
 
     public void showWeather() {
